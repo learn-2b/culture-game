@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>🏛️ الكنز التراثي</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background-color: #f2f2f2;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: start;
+      align-items: center;
+      padding: 15px;
+    }
+
+    .card {
+      background-color: #fff;
+      padding: 15px;
+      border-radius: 15px;
+      margin: 10px auto;
+      width: 90%;
+      max-width: 600px;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 0 10px #ccc;
+    }
+
+    h2 {
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+
+    h3 {
+      color: #6b3e26;
+      font-size: 1.2em;
+      margin-bottom: 10px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 80%;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      margin-top: 10px;
+    }
+
+    button {
+      padding: 10px 16px;
+      background-color: #8e5a35;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 10px;
+      font-size: 1em;
+    }
+
+    .feedback {
+      font-weight: bold;
+      margin-top: 15px;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 15px;
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+
+      .card {
+        padding: 10px;
+        max-height: 90vh;
+      }
+
+      input[type="text"] {
+        width: 90%;
+        padding: 8px;
+      }
+
+      button {
+        padding: 8px 12px;
+        font-size: 0.9em;
+      }
+
+      h2 {
+        font-size: 1.3em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h2>🏛️ الكنز التراثي</h2>
+
+  <div class="card">
+    <h3>{{ riddle }}</h3>
+
+    {% if not feedback %}
+      <form method="POST">
+        <input type="text" name="answer" placeholder="اكتبي إجابتك هنا" required>
+        <input type="hidden" name="riddle" value="{{ riddle }}">
+        <input type="hidden" name="correct_answer" value="{{ correct_answer }}">
+        <br>
+        <button type="submit">تحقق</button>
+      </form>
+    {% elif correct %}
+      <p><strong>✅ الإجابة الصحيحة:</strong> {{ correct_answer }}</p>
+      <div class="feedback">🎉 إجابة صحيحة!</div>
+      <form action="/treasure" method="get">
+        <button type="submit">التالي ➡️</button>
+      </form>
+    {% elif show_answer %}
+      <p><strong>✅ الإجابة الصحيحة:</strong> {{ correct_answer }}</p>
+      <div class="feedback">👁️ تم عرض الإجابة الصحيحة.</div>
+      <form action="/treasure" method="get">
+        <button type="submit">التالي ➡️</button>
+      </form>
+    {% else %}
+      <div class="feedback">❌ إجابة خاطئة.</div>
+      <div class="button-group">
+        <form method="POST">
+          <input type="hidden" name="try_again" value="yes">
+          <input type="hidden" name="riddle" value="{{ riddle }}">
+          <input type="hidden" name="correct_answer" value="{{ correct_answer }}">
+          <button type="submit">🔁 حاول مرة أخرى</button>
+        </form>
+        <form method="POST">
+          <input type="hidden" name="show_answer" value="yes">
+          <input type="hidden" name="riddle" value="{{ riddle }}">
+          <input type="hidden" name="correct_answer" value="{{ correct_answer }}">
+          <button type="submit">👁️ عرض الإجابة الصحيحة</button>
+        </form>
+      </div>
+    {% endif %}
+  </div>
+
+  <form action="/menu" method="get">
+    <button type="submit">⬅️ عودة إلى القائمة الرئيسية</button>
+  </form>
+  <audio id="sound-correct" preload="auto">
+  <source src="{{ url_for('static', filename='sounds/correct.mp3') }}" type="audio/mpeg">
+</audio>
+<audio id="sound-wrong" preload="auto">
+  <source src="{{ url_for('static', filename='sounds/wrong.mp3') }}" type="audio/mpeg">
+</audio>
+
+<script>
+  function playSound(type) {
+    const sound = document.getElementById('sound-' + type);
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play().catch(e => console.log("⚠️ لم يتم تشغيل الصوت:", e));
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    {% if correct %}
+      playSound("correct");
+    {% elif feedback and not correct %}
+      playSound("wrong");
+    {% endif %}
+  });
+</script>
+</body>
+</html>

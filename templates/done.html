@@ -1,0 +1,57 @@
+<!-- templates/done.html -->
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>انتهت اللعبة</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to bottom, #fffbe6, #ffd280);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h2 {
+      color: #6b3e26;
+      font-size: 2.5em;
+      margin-bottom: 1em;
+    }
+    form button {
+      padding: 15px 30px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 12px;
+      background-color: #8e5a35;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    form button:hover {
+      background-color: #6b3e26;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>{{ message }}</h2>
+
+  <form method="post" action="/reset">
+    <button type="submit">📋 القائمة الرئيسية</button>
+  </form>
+
+  <br>
+
+  <form method="post" action="/reset">
+    <input type="hidden" name="from" value="{{ request.referrer or '/menu' }}">
+    <button type="submit">🔄 ابدأ من جديد</button>
+  </form>
+  <audio id="sound-win" preload="auto" autoplay>
+  <source src="{{ url_for('static', filename='sounds/win.mp3') }}" type="audio/mpeg">
+</audio>
+</body>
+</html>
